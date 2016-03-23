@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.video.storyboard.listeners">
+
+    <require>org.nuxeo.platform.video.core.listeners</require>
+
+    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+        <listener
+                enabled="false"
+                name="videoStoryboardListener"
+                class="org.nuxeo.ecm.platform.video.listener.VideoStoryboardListener">
+        </listener>
+    </extension>
+
+</component>

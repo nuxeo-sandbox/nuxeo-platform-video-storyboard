@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.storyboard.commandline">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+    <command name="ffmpeg-extract-frames-timestamp" enabled="true">
+      <commandLine>ffprobe</commandLine>
+      <parameterString>-v quiet -show_frames -of compact -f lavfi "movie=#{inFilePath},select=gt(scene\,0.4)"</parameterString>
+      <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)
+      </installationDirective>
+    </command>
+
+    <command name="imagemagick-identify" enabled="true">
+      <commandLine>identify</commandLine>
+      <parameterString>-format "%[standard_deviation]" #{inFilePath}"</parameterString>
+      <installationDirective>You need to install Imagemagick</installationDirective>
+    </command>
+
+  </extension>
+
+</component>

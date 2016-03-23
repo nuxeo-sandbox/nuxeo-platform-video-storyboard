@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.video.storyboard.test.listeners">
+
+    <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
+    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+        <listener
+                enabled="false"
+                name="videoChangedListener"
+                class="org.nuxeo.ecm.platform.video.listener.VideoChangedListener">
+        </listener>
+
+        <listener
+                enabled="false"
+                name="videoAutomaticConversions"
+                class="org.nuxeo.ecm.platform.video.listener.VideoAutomaticConversionListener">
+        </listener>
+
+    </extension>
+
+</component>
