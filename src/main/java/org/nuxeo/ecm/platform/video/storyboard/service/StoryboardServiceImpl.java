@@ -20,28 +20,22 @@
 package org.nuxeo.ecm.platform.video.storyboard.service;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.platform.commandline.executor.api.*;
 import org.nuxeo.ecm.platform.video.Video;
-import org.nuxeo.ecm.platform.video.convert.Constants;
 import org.nuxeo.ecm.platform.video.storyboard.tools.FFmpegPathEscape;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import java.io.Serializable;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
 
 
 public class StoryboardServiceImpl extends DefaultComponent implements StoryboardService {
@@ -93,7 +87,8 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         return frames;
     }
 
-    protected List<Frame> filterFrames(Video video,List<Frame> input,int nbFrames) throws CommandNotAvailable {
+    protected List<Frame> filterFrames(Video video,List<Frame> input,int nbFrames)
+            throws CommandNotAvailable, IOException, CommandException {
         List<Frame> filtered = new ArrayList<>();
         int inputSize = input.size();
         int step = 1;
@@ -109,7 +104,8 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         return filtered;
     }
 
-    protected Frame getFirstRelevantFrameInRange(Video video, List<Frame> frames) throws CommandNotAvailable {
+    protected Frame getFirstRelevantFrameInRange(Video video, List<Frame> frames)
+            throws CommandNotAvailable, IOException, CommandException {
         Frame selected = null;
         for (Frame frame : frames) {
             Blob blob = extractFrameFromVideo(video,frame.getTimeInSeconds());
@@ -122,14 +118,19 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         return selected;
     }
 
-    protected Blob extractFrameFromVideo(Video video, double timecode) {
-        Map<String, Serializable> parameters = new HashMap<>();
-        parameters.put(Constants.POSITION_PARAMETER, timecode);
-        BlobHolder result;
-        ConversionService conversionService = Framework.getService(ConversionService.class);
-        result = conversionService.convert(Constants.SCREENSHOT_CONVERTER,
-                    new SimpleBlobHolder(video.getBlob()), parameters);
-        return result.getBlob();
+    protected Blob extractFrameFromVideo(Video video, double timecode)
+            throws IOException, CommandNotAvailable, CommandException {
+        Blob outBlob = Blobs.createBlobWithExtension(".jpeg");
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
+        params.addNamedParameter("inFilePath", video.getBlob().getFile().getAbsolutePath());
+        params.addNamedParameter("outFilePath", outBlob.getFile().getAbsolutePath());
+        params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
+        ExecResult res = cles.execCommand("ffmpeg-get-frame", params);
+        if (!res.isSuccessful()) {
+            throw new NuxeoException("FFmpeg",res.getError());
+        }
+        return outBlob;
     }
 
     protected boolean isFrameRelevant(Blob frame) throws CommandNotAvailable {
@@ -139,7 +140,7 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         params.addNamedParameter("inFilePath", inputPath);
         ExecResult result = cmdService.execCommand("imagemagick-identify", params);
         if (!result.isSuccessful()) {
-            throw new NuxeoException("FFprobe failed",result.getError());
+            throw new NuxeoException("identify failed",result.getError());
         }
         double std = Double.parseDouble(result.getOutput().get(0));
         return (std > STANDARD_DEVIATION_MIN);
