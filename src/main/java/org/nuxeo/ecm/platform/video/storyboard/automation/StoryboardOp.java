@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.video.storyboard.service.StoryboardService;
         description="Generate a storyboard for the input video document")
 public class StoryboardOp {
 
-    public static final String ID = "StoryboardOp";
+    public static final String ID = "Storyboard";
 
     private static final Log log = LogFactory.getLog(StoryboardOp.class);
 
@@ -55,19 +55,28 @@ public class StoryboardOp {
 
     @Param(
             name = "size",
-            description= "The maximum size of the storyboard",
-            required = true)
-    protected int size;
+            description= "The maximum size of the storyboard")
+    protected int size = 10;
+
+    @Param(
+            name = "save",
+            description= "Save modification made to the input document")
+    protected boolean save = false;
+
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
         VideoDocument videoDoc = doc.getAdapter(VideoDocument.class);
+        if (videoDoc==null) return doc;
         try {
             Storyboard storyboard = storyboardService.generateStoryboard(videoDoc.getVideo(),size);
             StoryboardAdapter adapter = doc.getAdapter(StoryboardAdapter.class);
             adapter.addAllFrames(storyboard.getFrames());
         } catch (Exception e) {
             log.error(e);
+        }
+        if (save) {
+            doc = ctx.getCoreSession().saveDocument(doc);
         }
         return doc;
     }

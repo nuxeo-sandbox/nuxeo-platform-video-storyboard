@@ -23,26 +23,26 @@ import org.nuxeo.ecm.core.api.Blob;
 
 public class Frame {
 
-    protected Blob frame;
+    protected Blob blob;
     protected double time;
     protected String comment;
 
     public Frame() {}
 
-    public Frame(Blob frame, double time, String comment) {
-        this.frame = frame;
+    public Frame(Blob blob, double time, String comment) {
+        this.blob = blob;
         this.time = time;
         this.comment = comment;
     }
 
 
-    public Blob getFrame() {
-        return frame;
+    public Blob getBlob() {
+        return blob;
     }
 
 
-    public void setFrame(Blob frame) {
-        this.frame = frame;
+    public void setBlob(Blob blob) {
+        this.blob = blob;
     }
 
 
@@ -68,7 +68,7 @@ public class Frame {
     @Override
     public String toString() {
         return "FrameImpl{" +
-                "frame=" + frame +
+                "blob=" + blob +
                 ", time=" + time +
                 ", comment='" + comment + '\'' +
                 '}';

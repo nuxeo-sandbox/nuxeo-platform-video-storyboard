@@ -9,6 +9,13 @@
                 name="videoStoryboardListener"
                 class="org.nuxeo.ecm.platform.video.listener.VideoStoryboardListener">
         </listener>
+
+        <listener name="storyboardListener" async="true" postCommit="true"
+                  class="org.nuxeo.ecm.platform.video.storyboard.listener.StoryboardListener"
+                  priority="10">
+            <event>videoChanged</event>
+        </listener>
+
     </extension>
 
 </component>

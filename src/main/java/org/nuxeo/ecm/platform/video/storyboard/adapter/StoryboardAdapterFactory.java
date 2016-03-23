@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.video.storyboard.adapter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
-import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_FACET;
+import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_STORYBOARD_FACET;
 
 /**
  * Factory instantiating {@link org.nuxeo.ecm.platform.video.storyboard.adapter.StoryboardAdapter}
@@ -35,7 +35,7 @@ public class StoryboardAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
-        if (doc.hasFacet(VIDEO_FACET)) {
+        if (doc.hasFacet(HAS_STORYBOARD_FACET)) {
             return new StoryboardAdapter(doc);
         }
         return null;

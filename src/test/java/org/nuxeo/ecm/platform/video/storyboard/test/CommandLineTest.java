@@ -88,4 +88,16 @@ public class CommandLineTest {
         Assert.assertTrue(result.isSuccessful());
     }
 
+    @Test
+    public void testIdentifyWithoutExtension() throws IOException, CommandNotAvailable, URISyntaxException {
+        CmdParameters params = cmdService.getDefaultCmdParameters();
+        String inputPath = Paths.get(getClass().getResource("/files/NONAME").toURI()).toString();
+        params.addNamedParameter("inFilePath", inputPath);
+        ExecResult result = cmdService.execCommand("imagemagick-identify", params);
+        if (!result.isSuccessful()) {
+            System.out.println(result.getError());
+        }
+        Assert.assertTrue(result.isSuccessful());
+    }
+
 }

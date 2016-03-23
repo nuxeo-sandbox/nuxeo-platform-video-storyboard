@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.storyboard.chains">
+    <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+        <scriptedOperation id="javascript.StoryboardListenerChain">
+            <inputType>Document</inputType>
+            <outputType>Document</outputType>
+            <category>javascript</category>
+            <description></description>
+            <script><![CDATA[function run(input, params) {
+              input = Storyboard(input, {
+                'size': 10,
+                'save': 'true'
+              });
+              return input;
+        }]]></script>
+        </scriptedOperation>
+    </extension>
+</component>

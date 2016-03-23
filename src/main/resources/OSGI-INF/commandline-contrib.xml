@@ -15,7 +15,7 @@
 
     <command name="imagemagick-identify" enabled="true">
       <commandLine>identify</commandLine>
-      <parameterString>-format "%[standard_deviation]" #{inFilePath}"</parameterString>
+      <parameterString>-format '%[standard_deviation]' #{inFilePath}"</parameterString>
       <installationDirective>You need to install Imagemagick</installationDirective>
     </command>
 

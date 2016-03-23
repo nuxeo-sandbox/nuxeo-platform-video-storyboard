@@ -22,6 +22,9 @@ package org.nuxeo.ecm.platform.video.storyboard.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -30,10 +33,9 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.video.VideoDocument;
-import org.nuxeo.ecm.platform.video.storyboard.service.Frame;
+import org.nuxeo.ecm.platform.video.storyboard.adapter.StoryboardAdapter;
+import org.nuxeo.ecm.platform.video.storyboard.automation.StoryboardOp;
 import org.nuxeo.ecm.platform.video.storyboard.service.Storyboard;
-import org.nuxeo.ecm.platform.video.storyboard.service.StoryboardService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -42,8 +44,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
@@ -57,34 +57,53 @@ import java.nio.file.Paths;
 @LocalDeploy({
         "nuxeo-vision-core:OSGI-INF/disable-conversion-listener-contrib.xml"
 })
-public class StoryboardServiceTest {
+public class StoryboardOperationTest {
 
     @Inject
     CoreSession session;
 
     @Inject
-    StoryboardService storyboardService;
+    AutomationService automationService;
 
     @Test
-    public void testGetStoryboard() throws Exception {
+    public void testOperationWithVideoDoc() throws Exception {
+
         DocumentModel doc = session.createDocumentModel("/", "Video", "Video");
         File file = new File(getClass().getResource("/files/TourEiffel.mp4").getPath());
         Blob blob = new FileBlob(file);
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
-        VideoDocument videoDoc = doc.getAdapter(VideoDocument.class);
-        Storyboard storyboard = storyboardService.generateStoryboard(videoDoc.getVideo(),10);
-        Assert.assertEquals(10,storyboard.size());
-        System.out.println(storyboard);
 
-        //save files
-        int i=0;
-        for (Frame frame : storyboard.getFrames()) {
-            Files.copy(frame.getBlob().getStream(),
-                    Paths.get(new File(getClass().getResource("/").getPath()).getPath(),"blob"+i+".jpg"));
-            i++;
-        }
+        OperationContext ctx = new OperationContext();
+        ctx.setInput(doc);
+        ctx.setCoreSession(session);
+        OperationChain chain = new OperationChain("testOperationWithVideoDoc");
+        chain.add(StoryboardOp.ID).set("size",5).set("save",true);
+        doc = (DocumentModel) automationService.run(ctx, chain);
 
+        Storyboard storyboard = doc.getAdapter(StoryboardAdapter.class);
+        Assert.assertEquals(5,storyboard.size());
+    }
+
+
+    @Test
+    public void testOperationWithFileDoc() throws Exception {
+
+        DocumentModel doc = session.createDocumentModel("/", "File", "File");
+        File file = new File(getClass().getResource("/files/TourEiffel.mp4").getPath());
+        Blob blob = new FileBlob(file);
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        OperationContext ctx = new OperationContext();
+        ctx.setInput(doc);
+        ctx.setCoreSession(session);
+        OperationChain chain = new OperationChain("testOperationWithVideoDoc");
+        chain.add(StoryboardOp.ID).set("size",5).set("save",true);
+        doc = (DocumentModel) automationService.run(ctx, chain);
+
+        Storyboard storyboard = doc.getAdapter(StoryboardAdapter.class);
+        Assert.assertNull(storyboard);
     }
 
 }

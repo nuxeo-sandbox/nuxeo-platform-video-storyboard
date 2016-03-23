@@ -58,7 +58,7 @@ public class StoryboardAdapter implements Storyboard {
         if (property!=null) {
             for (Map<String,Serializable> item : property) {
                 Frame frame = new Frame();
-                frame.setFrame((Blob) item.get("content"));
+                frame.setBlob((Blob) item.get("content"));
                 frame.setTimeInSeconds((Double) item.get("timecode"));
                 frame.setComment((String) item.get("comment"));
                 frames.add(frame);
@@ -94,7 +94,7 @@ public class StoryboardAdapter implements Storyboard {
         List<Map<String,Serializable>> property = new ArrayList<>();
         for (Frame frame : frames) {
             Map<String,Serializable> item = new HashedMap();
-            item.put("content", (Serializable) frame.getFrame());
+            item.put("content", (Serializable) frame.getBlob());
             item.put("timecode",frame.getTimeInSeconds());
             item.put("comment",frame.getComment());
             property.add(item);

@@ -114,7 +114,7 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         for (Frame frame : frames) {
             Blob blob = extractFrameFromVideo(video,frame.getTimeInSeconds());
             if (isFrameRelevant(blob)) {
-                frame.setFrame(blob);
+                frame.setBlob(blob);
                 selected = frame;
                 break;
             }
