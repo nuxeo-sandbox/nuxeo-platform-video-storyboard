@@ -2,7 +2,6 @@
 This plugin provides a service to generate video storyboards.
 
 ## Status
-
 As such this is a moving project in beta stage (no API maintenance, no deprecation process, etc.).
 
 ## Requirements
@@ -12,14 +11,13 @@ Building requires the following software:
 - ffmpeg
 - imagemagick
 
-## How to build
- 
+## Build
 ```
 mvn clean install
 ```
 
-## Deploying
-- copy the plugin in the nxserver/bundles folder
+## Install
+Copy the plugin in the nxserver/bundles folder
 
 ## Known limitations
 This plugin is a work in progress.
