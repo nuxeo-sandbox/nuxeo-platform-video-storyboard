@@ -132,7 +132,7 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         Frame selected = null;
         for (Frame frame : frames) {
             Blob blob = extractFrameFromVideo(video,frame.getTimeInSeconds());
-            Blob edges = convertFrameToEdges(blob);
+            Blob edges = detectEdges(blob);
             if (isFrameRelevant(edges)) {
                 frame.setBlob(blob);
                 selected = frame;
@@ -159,7 +159,7 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         return outBlob;
     }
 
-    protected Blob convertFrameToEdges(Blob blob) throws IOException, CommandNotAvailable, CommandException {
+    protected Blob detectEdges(Blob blob) throws IOException, CommandNotAvailable, CommandException {
         Blob outBlob = Blobs.createBlobWithExtension(".jpeg");
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
