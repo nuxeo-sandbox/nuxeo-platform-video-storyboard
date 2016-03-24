@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.video.storyboard.service.StoryboardService;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_STORYBOARD_FACET;
 import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_EVENT;
 
@@ -73,6 +74,9 @@ public class StoryboardListener implements PostCommitFilteringEventListener {
             try {
                 doc = (DocumentModel) as.run(octx, chain);
                 CoreSession session = docCtx.getCoreSession();
+                if (doc.isVersion()) {
+                    doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+                }
                 session.saveDocument(doc);
                 session.save();
             } catch (OperationException e) {
