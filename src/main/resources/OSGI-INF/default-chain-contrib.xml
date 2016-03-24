@@ -18,8 +18,8 @@
               }
 
               input = Storyboard(input, {
-                'size': size,
-                'save': true
+                'size': ''+size,
+                'save': 'true'
               });
               return input;
         }]]></script>
