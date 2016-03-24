@@ -32,4 +32,25 @@ public interface StoryboardService {
      */
     Storyboard generateStoryboard(Video video, int nbFrames) throws Exception;
 
+
+    /**
+     *
+     * @return the automation chain to use in the default listener
+     */
+    String getDefaultChain();
+
+
+    /**
+     *
+     * @return the maximum number of frames to generate for a video
+     */
+    int getMaxFrames();
+
+
+    /**
+     *
+     * @return the minimum step between to frames in seconds
+     */
+    int getMinStepInSeconds();
+
 }

@@ -11,7 +11,6 @@ Require-Bundle: org.nuxeo.ecm.core.api,
 Export-Package: org.nuxeo.ecm.platform.video.storyboard
 Nuxeo-Component: OSGI-INF/commandline-contrib.xml,
     OSGI-INF/storyboard-service-contrib.xml,
-    OSGI-INF/storyboard-listener-service-contrib.xml,
     OSGI-INF/adapters-contrib.xml,
     OSGI-INF/listener-contrib.xml,
     OSGI-INF/operation-contrib.xml,

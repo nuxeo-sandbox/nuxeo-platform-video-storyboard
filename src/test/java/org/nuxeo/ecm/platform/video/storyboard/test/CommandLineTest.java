@@ -89,11 +89,13 @@ public class CommandLineTest {
     }
 
     @Test
-    public void testIdentifyWithoutExtension() throws IOException, CommandNotAvailable, URISyntaxException {
+    public void testConvertToEdges() throws IOException, CommandNotAvailable, URISyntaxException {
+        Blob outBlob = Blobs.createBlobWithExtension(".jpg");
         CmdParameters params = cmdService.getDefaultCmdParameters();
         String inputPath = Paths.get(getClass().getResource("/files/NONAME").toURI()).toString();
         params.addNamedParameter("inFilePath", inputPath);
-        ExecResult result = cmdService.execCommand("imagemagick-identify", params);
+        params.addNamedParameter("outFilePath", outBlob.getFile().getAbsolutePath());
+        ExecResult result = cmdService.execCommand("imagemagick-edges", params);
         if (!result.isSuccessful()) {
             System.out.println(result.getError());
         }

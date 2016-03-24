@@ -41,8 +41,8 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.video.storyboard.adapter.StoryboardAdapter;
 import org.nuxeo.ecm.platform.video.storyboard.listener.StoryboardListener;
-import org.nuxeo.ecm.platform.video.storyboard.listener.StoryboardListenerService;
 import org.nuxeo.ecm.platform.video.storyboard.service.Storyboard;
+import org.nuxeo.ecm.platform.video.storyboard.service.StoryboardService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -75,7 +75,7 @@ public class StoryboardListenerTest {
     CoreSession session;
 
     @Inject
-    StoryboardListenerService storyboardListenerService;
+    StoryboardService storyboardService;
 
     @Test
     public void testListenerChain() throws IOException, OperationException {
@@ -88,9 +88,11 @@ public class StoryboardListenerTest {
         AutomationService as = Framework.getService(AutomationService.class);
         OperationContext ctx = new OperationContext();
         ctx.setInput(doc);
+        ctx.put("maxFrames",10);
+        ctx.put("minStepInSeconds",1);
         ctx.setCoreSession(session);
         OperationChain chain = new OperationChain("TestChain");
-        chain.add(storyboardListenerService.getDefaultChain());
+        chain.add(storyboardService.getDefaultChain());
         doc = (DocumentModel) as.run(ctx, chain);
 
         Storyboard storyboard = doc.getAdapter(StoryboardAdapter.class);

@@ -11,4 +11,16 @@
     <provide interface="org.nuxeo.ecm.platform.video.storyboard.service.StoryboardService" />
   </service>
 
+  <extension-point name="configuration">
+    <documentation>Configure the Storybard Service</documentation>
+    <object class="org.nuxeo.ecm.platform.video.storyboard.service.StoryboardDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.platform.video.storyboard.service" point="configuration">
+    <configuration>
+      <defaultListenerChainName>javascript.StoryboardListenerChain</defaultListenerChainName>
+      <minStd>1500</minStd>
+    </configuration>
+  </extension>
+
 </component>

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.video.storyboard.service.StoryboardService;
 import org.nuxeo.runtime.api.Framework;
 
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_STORYBOARD_FACET;
@@ -59,12 +60,13 @@ public class StoryboardListener implements PostCommitFilteringEventListener {
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(HAS_STORYBOARD_FACET)) {
-            StoryboardListenerService service =
-                    Framework.getService(StoryboardListenerService.class);
+            StoryboardService service = Framework.getService(StoryboardService.class);
             String chainName = service.getDefaultChain();
             AutomationService as = Framework.getService(AutomationService.class);
             OperationContext octx = new OperationContext();
             octx.setInput(doc);
+            octx.put("maxFrames",service.getMaxFrames());
+            octx.put("minStepInSeconds",service.getMinStepInSeconds());
             octx.setCoreSession(doc.getCoreSession());
             OperationChain chain = new OperationChain("StoryboardListenerChain");
             chain.add(chainName);

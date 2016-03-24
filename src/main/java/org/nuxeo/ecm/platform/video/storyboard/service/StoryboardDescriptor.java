@@ -17,20 +17,55 @@
  *     Michael Vachette
  */
 
-package org.nuxeo.ecm.platform.video.storyboard.listener;
+package org.nuxeo.ecm.platform.video.storyboard.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 
 @XObject("configuration")
-public class ConfigurationDescriptor {
+public class StoryboardDescriptor {
 
     @XNode("defaultListenerChainName")
     private String defaultListenerChainName;
+
+    @XNode("minStd")
+    private double minStd=1750;
+
+    @XNode("minStepInSeconds")
+    private int minStepInSeconds=5;
+
+    @XNode("maxFrames")
+    private int maxFrames=20;
+
+    @XNode("width")
+    private int width=240;
+
+    @XNode("height")
+    private int height=135;
+
 
     public String getDefaultListenerChainName() {
         return defaultListenerChainName;
     }
 
+    public double getMinStd() {
+        return minStd;
+    }
+
+    public int getMinStepInSeconds() {
+        return minStepInSeconds;
+    }
+
+    public int getMaxFrames() {
+        return maxFrames;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }

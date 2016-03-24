@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.*;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.storyboard.tools.FFmpegPathEscape;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import java.io.IOException;
@@ -45,8 +46,18 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
 
     protected static final String TIME_GROUP = "time";
 
-    protected static final int STANDARD_DEVIATION_MIN = 3500;
+    protected static final String CONFIG_EXT_POINT = "configuration";
 
+    protected StoryboardDescriptor config = null;
+
+
+    @Override
+    public void registerContribution(Object contribution, String extensionPoint,
+                                     ComponentInstance contributor) {
+        if (CONFIG_EXT_POINT.equals(extensionPoint)) {
+            config = (StoryboardDescriptor) contribution;
+        }
+    }
 
     @Override
     public Storyboard generateStoryboard(Video video, int nbFrames) throws Exception {
@@ -58,18 +69,30 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         return storyboard;
     }
 
+    @Override
+    public String getDefaultChain() {
+        return config.getDefaultListenerChainName();
+    }
+
+    @Override
+    public int getMaxFrames() {
+        return config.getMaxFrames();
+    }
+
+    @Override
+    public int getMinStepInSeconds() {
+        return config.getMinStepInSeconds();
+    }
+
     protected List<Frame> getMainFrames(Video video) throws NuxeoException, CommandNotAvailable {
         CommandLineExecutorService cmdService = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cmdService.getDefaultCmdParameters();
         String inputPath = Paths.get(video.getBlob().getFile().getAbsolutePath()).toString();
         inputPath = FFmpegPathEscape.escape(inputPath);
         params.addNamedParameter("inFilePath", inputPath);
-        params.addNamedParameter("from", String.valueOf(10));
-        params.addNamedParameter("to", String.valueOf(20));
-        params.addNamedParameter("nb", String.valueOf(5));
         ExecResult result = cmdService.execCommand("ffmpeg-extract-frames-timestamp", params);
         if (!result.isSuccessful()) {
-            throw new NuxeoException("FFprobe failed",result.getError());
+            throw new NuxeoException("ffprobe failed",result.getError());
         }
         return convertFFprobeOutput(result.getOutput());
     }
@@ -109,7 +132,8 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         Frame selected = null;
         for (Frame frame : frames) {
             Blob blob = extractFrameFromVideo(video,frame.getTimeInSeconds());
-            if (isFrameRelevant(blob)) {
+            Blob edges = convertFrameToEdges(blob);
+            if (isFrameRelevant(edges)) {
                 frame.setBlob(blob);
                 selected = frame;
                 break;
@@ -125,13 +149,29 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
         CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("inFilePath", video.getBlob().getFile().getAbsolutePath());
         params.addNamedParameter("outFilePath", outBlob.getFile().getAbsolutePath());
+        params.addNamedParameter("width", ""+config.getWidth());
+        params.addNamedParameter("height", ""+config.getHeight());
         params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
         ExecResult res = cles.execCommand("ffmpeg-get-frame", params);
         if (!res.isSuccessful()) {
-            throw new NuxeoException("FFmpeg",res.getError());
+            throw new NuxeoException("ffmpeg failed to extract frame",res.getError());
         }
         return outBlob;
     }
+
+    protected Blob convertFrameToEdges(Blob blob) throws IOException, CommandNotAvailable, CommandException {
+        Blob outBlob = Blobs.createBlobWithExtension(".jpeg");
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
+        params.addNamedParameter("inFilePath", blob.getFile().getAbsolutePath());
+        params.addNamedParameter("outFilePath", outBlob.getFile().getAbsolutePath());
+        ExecResult res = cles.execCommand("imagemagick-edges", params);
+        if (!res.isSuccessful()) {
+            throw new NuxeoException("Convert to edges with IM failed",res.getError());
+        }
+        return outBlob;
+    }
+
 
     protected boolean isFrameRelevant(Blob frame) throws CommandNotAvailable {
         CommandLineExecutorService cmdService = Framework.getService(CommandLineExecutorService.class);
@@ -143,7 +183,7 @@ public class StoryboardServiceImpl extends DefaultComponent implements Storyboar
             throw new NuxeoException("identify failed",result.getError());
         }
         double std = Double.parseDouble(result.getOutput().get(0));
-        return (std > STANDARD_DEVIATION_MIN);
+        return (std > config.getMinStd());
     }
 
 }
