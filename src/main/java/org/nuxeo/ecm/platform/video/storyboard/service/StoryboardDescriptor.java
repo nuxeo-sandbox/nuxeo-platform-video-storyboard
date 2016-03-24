@@ -27,16 +27,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class StoryboardDescriptor {
 
     @XNode("defaultListenerChainName")
-    private String defaultListenerChainName;
+    private String defaultListenerChainName="javascript.StoryboardListenerChain";
 
     @XNode("minStd")
-    private double minStd=1750;
+    private double minStd=5000.0;
 
     @XNode("minStepInSeconds")
     private int minStepInSeconds=5;
 
     @XNode("maxFrames")
-    private int maxFrames=20;
+    private int maxFrames=30;
 
     @XNode("width")
     private int width=240;

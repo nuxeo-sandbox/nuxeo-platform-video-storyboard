@@ -19,7 +19,6 @@
   <extension target="org.nuxeo.ecm.platform.video.storyboard.service" point="configuration">
     <configuration>
       <defaultListenerChainName>javascript.StoryboardListenerChain</defaultListenerChainName>
-      <minStd>1500</minStd>
     </configuration>
   </extension>
 
