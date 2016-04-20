@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.labs.video.storyboard.chains">
+    <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+        <scriptedOperation id="javascript.StoryboardListenerChain">
+            <inputType>Document</inputType>
+            <outputType>Document</outputType>
+            <category>javascript</category>
+            <description></description>
+            <script><![CDATA[function run(input, params) {
+              var size = ctx.maxFrames;
+              var duration = input['vid:info'].duration;
+
+              if (duration!==undefined && duration!==null) {
+                // Ensure min step
+                if ((duration/size)<ctx.minStepInSeconds) {
+                    size = Math.round(duration / ctx.minStepInSeconds);
+                }
+              }
+
+              input = Storyboard(input, {
+                'size': ''+size,
+                'save': 'false'
+              });
+              return input;
+        }]]></script>
+        </scriptedOperation>
+    </extension>
+</component>

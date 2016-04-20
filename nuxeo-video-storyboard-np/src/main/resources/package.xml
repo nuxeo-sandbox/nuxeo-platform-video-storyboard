@@ -1,0 +1,28 @@
+<!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
+<package type="addon" name="nuxeo-video-storyboard" version="@VERSION@">
+  <title>Nuxeo Video Storyboard</title>
+  <description>
+    <p>This plugin provides a service to generate video storyboards
+    </p>
+    <p>Requires Nuxeo DAM.</p>
+  </description>
+  <home-page></home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance> -->
+  <nuxeo-validation>none</nuxeo-validation>
+  <production-state>testing</production-state>
+  <supported>false</supported>
+  <platforms>
+    <platform>cap-@DISTRIB_VERSION@</platform>
+    <platform>cap-@DISTRIB_VERSION@-HF*</platform>
+  </platforms>
+  <dependencies>
+    <package>nuxeo-dam</package>
+  </dependencies>
+  <license>Apache License, Version 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+  <visibility>MARKETPLACE</visibility>
+</package>
