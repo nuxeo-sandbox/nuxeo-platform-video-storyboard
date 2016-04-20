@@ -17,7 +17,7 @@ mvn clean install
 ```
 
 ## Install
-Copy the plugin in the nxserver/bundles folder
+Install the Nuxeo Package
 
 ## Known limitations
 This plugin is a work in progress.
