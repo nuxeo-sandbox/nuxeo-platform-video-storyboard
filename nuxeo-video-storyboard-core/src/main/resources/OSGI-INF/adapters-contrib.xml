@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.labs.video.storyboard.adapter">
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
+     <adapter class="org.nuxeo.labs.video.storyboard.adapter.StoryboardAdapter"
+       factory="org.nuxeo.labs.video.storyboard.adapter.StoryboardAdapterFactory"/>
+  </extension>
+
+</component>
